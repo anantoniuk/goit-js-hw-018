@@ -3,22 +3,21 @@ const btnGet = document.querySelector("#get-students-btn");
 
 // Функція для отримання всіх студентів
 
-function getStudents() {
+async function getStudents() {
   const url = "http://localhost:3001/students";
 
-  return fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      renderStudents(data);
-    })
-    .catch((err) => console.log(err));
+  try {
+    const response = await fetch(url);
 
-  // твій код
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    renderStudents(data);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 // Функція для відображення студентів у таблиці
@@ -48,72 +47,72 @@ function renderStudents(students) {
 
 // Функція для додавання нового студента
 
-function addStudent(e) {
+async function addStudent(e) {
   const url = `http://localhost:3001/students`;
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "Application/json",
-    },
-    body: JSON.stringify(student),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .catch((err) => console.log(err));
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(student),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 // Функція для оновлення студента
 
-function updateStudent(id) {
+async function updateStudent(id) {
   const url = `http://localhost:3001/students/${id}`;
-  return fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "Application/json",
-    },
-    body: JSON.stringify(student),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .catch((err) => console.log(err));
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "Application/json",
+      },
+      body: JSON.stringify(student),
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // Функція для видалення студента
 
-function deleteStudent(id) {
+async function deleteStudent(id) {
   const url = `http://localhost:3001/students/${id}`;
-  return fetch(url, {
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .catch((err) => console.log(err));
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 btnGet.addEventListener("click", getStudents);
 
-tbody.addEventListener("click", (e) => {
+tbody.addEventListener("click", async (e) => {
   const deleteBtn = e.target.closest("[data-delete]");
 
   if (deleteBtn) {
-    deleteStudent(deleteBtn.dataset.delete).then(getStudents);
+    await deleteStudent(deleteBtn.dataset.delete);
+    await getStudents();
   }
 });
-
-// getStudents().then((data) => {
-//   if (data) {
-//     renderStudents(data);
-//   }
-// });
